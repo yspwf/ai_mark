@@ -17,18 +17,24 @@ const preStyle: React.CSSProperties = {
   fontSize: '0.88em',
   fontStyle: 'normal',
   margin: 0,
+  border: "1px solid #efefef",
 };
 
 const codeStyle: React.CSSProperties = {
   fontFamily: 'inherit',
-  fontSize: 'inherit',
+//   fontSize: 'inherit',
   background: 'none',
   border: 'none',
   padding: 0,
   color: 'inherit',
   whiteSpace: 'pre',
 //   color: '#4c4247',
+//   background: "rgba(243, 244, 244)",
+//   padding: "2px 5px",
+  fontSize: "15px",
+//   color: "rgba(51, 51, 51)",
 };
+
 
 
 interface CodeBlockProps {
@@ -212,6 +218,21 @@ const Anchor: NonNullable<Components['a']> = ({
 };
 
 
+type ImgProps = React.ComponentPropsWithoutRef<'img'> & ExtraProps;
+
+const Img: NonNullable<Components['img']> = ({src, alt, ...props}: ImgProps) => {
+    const allowedDomains = ['trusted-cdn.com', 'secure-images.example.com']
+    if (!src) return null;
+    const url = new URL(src)
+    
+    if (!allowedDomains.includes(url.hostname)) {
+      return <div className="image-blocked">图片已被阻止显示</div>
+    }
+    
+    return <img src={src} alt={alt} {...props} />
+};
+
+
 const StreamingMarkdown = ({ content }:{content: string}) => {
     // let index = 0;
   return (
@@ -236,6 +257,7 @@ const StreamingMarkdown = ({ content }:{content: string}) => {
         a: Anchor,
         pre: Pre,
         code: InlineCode,
+        img: Img,
         // code({ node, className, children, ...props }) {
         //     console.log(className, children)
         // //   const match = /language-(\w+)/.exec(className || '');
