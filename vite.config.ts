@@ -13,6 +13,7 @@ if(existsSync('./dist')) rmSync('./dist', {recursive: true, force: true});
 
 export default defineConfig(({mode}) => {
     const env = loadEnv(mode, process.cwd());
+    console.log(`当前运行环境配置信息 evnMap = ${JSON.stringify(env)}`);
     return {
         plugins: [
             react(),
@@ -21,14 +22,16 @@ export default defineConfig(({mode}) => {
                     entry: 'electron/index.ts',
                     onstart(options){
                         // 启动electron项目
-                        options.startup();
+                        // options.startup();
+                        options.startup(['.', '--no-sandbox']).then(r => {})
                     },
                     vite: {
                         build: {
                             //构建出口
+                            sourcemap: true,
                             outDir: 'dist-electron/main',
                             rolldownOptions: {
-                                external: ['child_process']
+                                external: ['child_process', 'electron']
                             }
                         }
                     }
@@ -41,7 +44,11 @@ export default defineConfig(({mode}) => {
                     },
                     vite: {
                         build: {
-                            outDir: 'dist-electron/preload'
+                            sourcemap: true,
+                            outDir: 'dist-electron/preload',
+                            rolldownOptions: {
+                                external: ['child_process', 'electron']
+                            }
                         }
                     }
                 }
@@ -54,7 +61,11 @@ export default defineConfig(({mode}) => {
         resolve: {
             alias: {
                 '~': path.resolve(__dirname, './'),
-                '@': path.resolve(__dirname, './src')
+                '@': path.resolve(__dirname, './src'),
+                '@a': path.resolve(__dirname, 'src/assets'),
+				'@u': path.resolve(__dirname, 'src/utils'),
+				'@c': path.resolve(__dirname, 'src/components'),
+				'@api': path.resolve(__dirname, 'src/api'),
             },
             extensions: ['.js', '.ts', '.jsx', '.tsx', '.json', '.css', '.scss']
         },
@@ -76,6 +87,8 @@ export default defineConfig(({mode}) => {
                             return 'react-vendor';
                         }
                     },
+                    entryFileNames:'[name].js',
+                    format: 'cjs'
                 },
                 external: ['child_process']
             }
