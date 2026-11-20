@@ -2,11 +2,13 @@
   "name": "aiMarkdown",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist-electron/main/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "electron:dev": "electron .",
+    "allDev": "pnpm run build && node mvdist.js"
   },
   "keywords": [],
   "author": "",
@@ -20,14 +22,18 @@
   },
   "type": "module",
   "devDependencies": {
+    "@types/electron": "^1.6.12",
     "@types/katex": "^0.16.8",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^6.3.0",
+    "electron": "^45.4.1",
     "typescript": "^7.0.2",
-    "vite": "^8.3.8"
+    "vite": "^8.3.8",
+    "vite-plugin-electron": "^1.2.0",
+    "vite-plugin-electron-renderer": "^1.0.0"
   },
   "dependencies": {
     "highlight.js": "^11.12.0",
