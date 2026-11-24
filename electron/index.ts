@@ -39,7 +39,11 @@ const createWindow = () => {
             nodeIntegration: false,    // 关闭node集成
             sandbox: false,           // 额外建议：启用 Chromium 沙箱
             webSecurity: true,
-            additionalArguments: ['--expose-gc']
+            additionalArguments: ['--expose-gc'],
+            // 禁用 WebGL（除非用 Three.js）
+            webgl: false,
+            // 禁用 PDF 查看器（减少内存占用）
+            plugins: false,
         }
     });
 
