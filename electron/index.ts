@@ -60,26 +60,26 @@ const createWindow = () => {
     win.webContents.openDevTools({mode: 'detach'});
 
 
-    const icon = '';
-    const tray = new Tray(icon)
+    // const icon = '';
+    // const tray = new Tray(icon)
 
-    const contextMenu = [
-        {
-        label: '退出',
-        click: function () {
-            app.exit()
-        }
-        }
-    ]
+    // const contextMenu = [
+    //     {
+    //     label: '退出',
+    //     click: function () {
+    //         app.exit()
+    //     }
+    //     }
+    // ]
 
-    const menu = Menu.buildFromTemplate(contextMenu)
-    tray.setToolTip('EC编程俱乐部')
-    tray.setContextMenu(menu)
-    tray.on('click', () => {
-        // 使窗口显示在任务栏中
-        win.setSkipTaskbar(false)
-        win.show()
-    })
+    // const menu = Menu.buildFromTemplate(contextMenu)
+    // tray.setToolTip('EC编程俱乐部')
+    // tray.setContextMenu(menu)
+    // tray.on('click', () => {
+    //     // 使窗口显示在任务栏中
+    //     win.setSkipTaskbar(false)
+    //     win.show()
+    // })
 
 }
 

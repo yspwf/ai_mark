@@ -114,7 +114,7 @@
 // export default App;
 
 import { useEffect, useRef, useState } from 'react';
-import StreamingMarkdown from './components/StreamingMarkdown';
+import StreamingMarkdown from '../components/StreamingMarkdown';
 
 type ApiMessage = {
   role: 'system' | 'user' | 'assistant';

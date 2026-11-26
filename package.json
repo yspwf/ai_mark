@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "electron:dev": "electron .",
-    "allDev": "pnpm run build && node mvdist.js"
+    "allDev": "pnpm run build && node ./script/mvdist.js"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +36,7 @@
     "vite-plugin-electron-renderer": "^1.0.0"
   },
   "dependencies": {
+    "echarts-for-react": "^3.1.0",
     "highlight.js": "^11.12.0",
     "katex": "^0.19.1",
     "react": "^19.3.1",

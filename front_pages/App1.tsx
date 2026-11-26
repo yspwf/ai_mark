@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import StreamingMarkdown from './components/StreamingMarkdown';
+import StreamingMarkdown from '../components/StreamingMarkdown';
 
 type Role = 'user' | 'assistant';
 type ApiMessage = { role: 'system' | 'user' | 'assistant'; content: string };

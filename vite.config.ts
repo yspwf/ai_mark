@@ -17,46 +17,46 @@ export default defineConfig(({mode}) => {
     return {
         plugins: [
             react(),
-            electron([
-                { //主进程配置
-                    entry: 'electron/index.ts',
-                    onstart(options){
-                        // 启动electron项目
-                        // options.startup();
-                        options.startup(['.', '--no-sandbox']).then(r => {})
-                    },
-                    vite: {
-                        build: {
-                            //构建出口
-                            sourcemap: true,
-                            outDir: 'dist-electron/main',
-                            rolldownOptions: {
-                                external: ['child_process', 'electron']
-                            }
-                        }
-                    }
-                },
-                { //x渲染进程
-                    entry: 'electron/preload.ts',
-                    onstart(options){
-                        // 加载渲染进程配置
-                        options.reload();
-                    },
-                    vite: {
-                        build: {
-                            sourcemap: true,
-                            outDir: 'dist-electron/preload',
-                            rolldownOptions: {
-                                external: ['child_process', 'electron']
-                            }
-                        }
-                    }
-                }
-            ]),
-            renderer({
-                // 渲染进程融入node
-                // nodeIntegration: true,
-            })
+            // electron([
+            //     { //主进程配置
+            //         entry: 'electron/index.ts',
+            //         onstart(options){
+            //             // 启动electron项目
+            //             // options.startup();
+            //             options.startup(['.', '--no-sandbox']).then(r => {})
+            //         },
+            //         vite: {
+            //             build: {
+            //                 //构建出口
+            //                 sourcemap: true,
+            //                 outDir: 'dist-electron/main',
+            //                 rolldownOptions: {
+            //                     external: ['child_process', 'electron']
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     { //x渲染进程
+            //         entry: 'electron/preload.ts',
+            //         onstart(options){
+            //             // 加载渲染进程配置
+            //             options.reload();
+            //         },
+            //         vite: {
+            //             build: {
+            //                 sourcemap: true,
+            //                 outDir: 'dist-electron/preload',
+            //                 rolldownOptions: {
+            //                     external: ['child_process', 'electron']
+            //                 }
+            //             }
+            //         }
+            //     }
+            // ]),
+            // renderer({
+            //     // 渲染进程融入node
+            //     // nodeIntegration: true,
+            // })
         ],
         resolve: {
             alias: {
@@ -88,7 +88,8 @@ export default defineConfig(({mode}) => {
                         }
                     },
                     entryFileNames:'[name].js',
-                    format: 'cjs'
+                    // format: 'cjs'
+                    format: 'es'
                 },
                 external: ['child_process']
             }
