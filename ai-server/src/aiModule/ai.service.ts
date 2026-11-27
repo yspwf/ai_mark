@@ -1,6 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import OpenAI from 'openai';
 import { AIServiceConfig, ChatStreamChunk, StreamChatOptions } from './config';
+import type { CompletionUsage } from 'openai/resources';
+
+interface PendingToolCall {
+  id?: string;
+  name?: string;
+  arguments: string;
+}
 
 @Injectable()
 export class AiService {
@@ -61,19 +68,111 @@ export class AiService {
         }
     }
 
+    private async fakeWeather(city: string) {
+        return {
+            city,
+            temp: "26°C",
+            condition: "晴"
+        };
+    }
 
     //对外主方法：带重试的流式对话
-    // async *streamChat(
-    //     messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
-    //     options: StreamChatOptions = {}
-    // ): AsyncGenerator<ChatStreamChunk>{
-    //     const startTime = performance.now();
+    async *streamChat(
+        messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+        options: StreamChatOptions = {}
+    ): AsyncGenerator<ChatStreamChunk>{
+        const startTime = performance.now();
 
-    //     const {signal, model} = options;
+        const {signal, model} = options ?? {};
+
+        let stream: AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
+
+        try{
+            stream = await this.openai.chat.completions.create({
+                model: this.config.model,
+                messages,
+                stream: true,
+                stream_options: { include_usage: true},
+                tools: [
+                    {
+                        type: "function",
+                        function: {
+                            name: "searchWeather",
+                            description: "查询城市天气",
+                            parameters: {
+                                type: "object",
+                                properties: {
+                                    city: { type: "string" },
+                                },
+                                required: ["city"],
+                            },
+                        },
+                    }
+                ],
+                tool_choice: 'auto',
+            },{ signal });
+        }catch(error: unknown){
+            if(signal?.aborted){
+                yield {type: "error", code:'ABORTED', message:'请求已取消', retryable: false}
+                return;
+            }
+
+            yield {
+                type: 'error',
+                code: 'UPSTREAM_ERROR',
+                message: error instanceof Error ? error.message : '请求模型失败',
+                retryable: true,
+            };
+            return;
+        }
 
 
-    // }
+        let finishReason: string | null = null;
+        let usage: CompletionUsage | undefined;
 
+        try{
+            const toolCallBuffer = new Map<number, PendingToolCall>();
+            for await (const chunk of stream) {
+                // 信号终止则立刻退出生成器
+                if(signal?.aborted) return;
+
+                if(chunk.usage) usage = chunk.usage;
+                const choice = chunk.choices.at(0);
+
+                if(!choice) continue;
+
+                if(choice.finish_reason) finishReason = choice.finish_reason;
+                // console.log("finishReason============", finishReason, choice.delta)
+
+                const content = choice.delta?.content;
+
+                if(content) {
+                    yield { type:'content', content}
+                }
+            }
+        }catch(error: unknown){
+            if (signal?.aborted) {
+                yield { type: 'error', code: 'ABORTED', message: '请求已取消', retryable: false };
+                return;
+            }
+
+            yield {
+                type: 'error',
+                code: 'UPSTREAM_ERROR',
+                message: error instanceof Error ? error.message : '请求模型失败',
+                retryable: true,
+            };
+            return;
+        }
+
+        //正常结束
+        yield {
+            type: 'done',
+            finishReason,
+            usage,
+            durationMs: performance.now() - startTime
+        }
+    }
 
 }
 

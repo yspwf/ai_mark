@@ -4,8 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-import electron from 'vite-plugin-electron';
-import renderer from 'vite-plugin-electron-renderer';
+// import electron from 'vite-plugin-electron';
+// import renderer from 'vite-plugin-electron-renderer';
 import { rmSync, existsSync } from 'node:fs';
 
 if(existsSync('./dist-electron')) rmSync('./dist-electron', {recursive: true, force: true});
@@ -73,8 +73,15 @@ export default defineConfig(({mode}) => {
         build: {
             emptyOutDir: true,
             assetsInlineLimit: 4096,
-            minify: true,  // 使用terser进行更深度的代码压缩
+            // minify: true,  // 使用terser进行更深度的代码压缩
             chunkSizeWarningLimit: 1500,  // 分块大小警告阈值(KB)，超过会提示
+            minify: "terser",
+            terserOptions: {
+                compress: {
+                    drop_console: true,
+                    drop_debugger: true,
+                },
+            },
             rolldownOptions: {
                 input: {
                     index: path.resolve(__dirname, './index.html')
